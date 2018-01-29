@@ -1,11 +1,15 @@
 package net.worknote.service;
 
-import net.worknote.dto.UserAuthenticationDTO;
 import net.worknote.entity.User;
+import net.worknote.request.UserLoginRequest;
 import net.worknote.request.UserRegistrationRequest;
+
+import javax.mail.MessagingException;
 
 public interface UserService {
 
-    UserAuthenticationDTO registration(UserRegistrationRequest user);
+    UserLoginRequest registration(UserRegistrationRequest user) throws MessagingException;
+
+    User findByEmail(String email);
 
 }

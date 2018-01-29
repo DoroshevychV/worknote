@@ -3,7 +3,6 @@ package net.worknote.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.worknote.entity.User;
 
-import javax.validation.constraints.NotNull;
 
 public class UserRegistrationRequest{
 
@@ -11,7 +10,6 @@ public class UserRegistrationRequest{
 
     private String lastName;
 
-    @NotNull
     private String email;
 
     private String password;
@@ -87,6 +85,8 @@ public class UserRegistrationRequest{
                 ", repeatPassword='" + repeatPassword + '\'' +
                 '}';
     }
+
+
 
     //method editing first or last name
     //and replaces spelling

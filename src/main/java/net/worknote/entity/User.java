@@ -1,9 +1,16 @@
 package net.worknote.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.worknote.entity.enums.Role;
 import net.worknote.request.UserRegistrationRequest;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author Vadym Doroshevych
@@ -12,7 +19,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +33,10 @@ public class User {
 
     @JsonIgnore
     private String password;
+
+    private boolean emailIsActivated = false;
+
+    private Role role;
 
     public User() {
     }
@@ -43,6 +54,14 @@ public class User {
         this.lastName = userRegistrationRequest.getLastName();
         this.email = userRegistrationRequest.getEmail();
         this.password = userRegistrationRequest.getPassword();
+    }
+
+    public User(String firstName, String lastName, String email, String password, boolean emailIsActivated) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.emailIsActivated = emailIsActivated;
     }
 
     public Long getId() {
@@ -85,6 +104,22 @@ public class User {
         this.password = password;
     }
 
+    public boolean getEmailIsActivated() {
+        return emailIsActivated;
+    }
+
+    public void setEmailIsActivated(boolean emailIsActivated) {
+        this.emailIsActivated = emailIsActivated;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -93,6 +128,41 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", emailIsActivated=" + emailIsActivated +
+                ", role=" + role +
                 '}';
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(role.name())));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+
 }
