@@ -72,8 +72,11 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/mail/activation/send_message_again")
     public boolean sendConfirmationLetterAgain(@RequestBody IdRequest idRequest) throws MessagingException {
+        System.out.println("Hello word");
         return userService.sendConfirmationLetter(userService.findById(idRequest.getId()));
     }
+
+
 
 
 
