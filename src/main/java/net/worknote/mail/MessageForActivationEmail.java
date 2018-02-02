@@ -1,25 +1,15 @@
 package net.worknote.mail;
 
-import net.worknote.entity.User;
-import net.worknote.request.UserRegistrationRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
+import net.worknote.domain.User;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-public class Message {
+public class MessageForActivationEmail {
 
     private String messageForConfirmationOfMail;
 
-    public Message() {
+    public MessageForActivationEmail() {
     }
 
-    public Message(String messageForConfirmationOfMail) {
+    public MessageForActivationEmail(String messageForConfirmationOfMail) {
         this.messageForConfirmationOfMail = messageForConfirmationOfMail;
     }
 
@@ -27,7 +17,7 @@ public class Message {
         return messageForConfirmationOfMail;
     }
 
-    public void setMessageForConfirmationOfMail(String name) {
+    public void setMessageForConfirmationOfMail(User user) {
         messageForConfirmationOfMail = "<html>\n" +
                 "\n" +
                 "<head>\n" +
@@ -46,7 +36,7 @@ public class Message {
                 "        -ms-text-size-adjust: none;\n" +
                 "    }\n" +
                 "\n" +
-                "    @media only screen and (max-device-width: 680px),\n" +
+                "    @files only screen and (max-device-width: 680px),\n" +
                 "    only screen and (max-width: 680px) {\n" +
                 "        *[class=\"table_width_100\"] {\n" +
                 "            width: 96% !important;\n" +
@@ -115,18 +105,18 @@ public class Message {
                 "                                                <table width=\"90%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"text-align: center\">\n" +
                 "                                                    <tr>\n" +
                 "                                                        <td style=\"padding-top: 20px;color: black\">\n" +
-                "                                                            <span style=\"color:black\">Congratulations <span style=\"font-size: 15px;font-weight: bolder;color: #4d74a1\"> Vadym</span>!<br/> You received this message because you just registered on the site <a href=\"http://www.worknote.net\" style=\"color: #4d74a1\">http://www.worknote.net</a> To confirm this mail, follow the link below.</span>\n" +
+                "                                                            <span style=\"color:black\">Congratulations </span><span style=\"font-size: 15px;font-weight: bolder;color: #4d74a1\"> "+user.getFirstName()+"</span>!<br/> <span style=\"color:black\">You received this message because you just registered on the site <a href=\"http://www.worknote.net\" style=\"color: #4d74a1\">http://www.worknote.net</a> To confirm this mail, follow the link below.</span>\n" +
                 "                                                        </td>\n" +
                 "                                                    </tr>\n" +
                 "                                                    <tr>\n" +
                 "                                                        <td align=\"center\" style=\"padding-top: 20px;\">\n" +
-                "                                                            <a href=\"message.html\">\n" +
+                "                                                            <a href=\"http://localhost:8080/user/mail/activation/"+user.getId()+"_"+user.getEmailActivatedToken()+"\" style=\"text-decoration: none;\">\n" +
                 "                                                                <div type=\"button\" style=\"background-color: #4d74a1;border-radius: 0px;font-family: ubuntu;font-weight: bolder;color: white;max-width: 130px;padding-top: 20px;padding-bottom: 20px;cursor: pointer;\">Confirm</div>\n" +
                 "                                                            </a>\n" +
                 "                                                            <!-- padding -->\n" +
                 "                                                            <br>\n" +
                 "                                                            <br>\n" +
-                "                                                            <p style=\"text-align: center;color: darkslategray;font-size: 12px\"> <b style=\"text-align: center;font-size: 12px;\">Message sent automatically. No need to answer!</b>\n" +
+                "                                                            <p style=\"text-align: center;color: darkslategray;font-size: 12px\"> <b style=\"text-align: center;font-size: 12px;\">MessageForActivationEmail sent automatically. No need to answer!</b>\n" +
                 "                                                                <p style=\"color: brown;font-size: 12px\">\n" +
                 "                                                                    If you did not register - ignore this message!</p>\n" +
                 "                                                        </td>\n" +
@@ -171,7 +161,7 @@ public class Message {
 
     @Override
     public String toString() {
-        return "Message{" +
+        return "MessageForActivationEmail{" +
                 "MessageForConfirmationOfMail='" + messageForConfirmationOfMail + '\'' +
                 '}';
     }

@@ -1,15 +1,15 @@
 package net.worknote.controller;
 
 import net.worknote.dto.TokenModel;
-import net.worknote.dto.UserAuthenticationDTO;
-import net.worknote.entity.User;
+import net.worknote.domain.User;
+import net.worknote.request.IdRequest;
 import net.worknote.request.UserLoginRequest;
 import net.worknote.request.UserRegistrationRequest;
 import net.worknote.security.TokenUtils;
 import net.worknote.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-
 
 @CrossOrigin
 @RestController
@@ -41,8 +40,7 @@ public class UserController {
     @PutMapping("/registration")
     public TokenModel registrationUser(@RequestBody UserRegistrationRequest user) throws MessagingException, MessagingException {
         UserLoginRequest userLoginRequest = userService.registration(user);
-        TokenModel tokenModel = authenticationRequest(userLoginRequest);
-        return tokenModel;
+        return authenticationRequest(userLoginRequest);
     }
 
     @Autowired
@@ -50,9 +48,7 @@ public class UserController {
 
     @PostMapping("/login")
     public TokenModel authenticationRequest(@RequestBody UserLoginRequest userLoginRequest) {
-
         User user = userService.findByEmail(userLoginRequest.getEmail());
-
         Authentication authentication = this.authenticationManager
                 .authenticate
                         (new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword()));
@@ -62,6 +58,24 @@ public class UserController {
         String token = this.tokenUtils.generateToken(userDetails);
         TokenModel tokenModel = new TokenModel("worknote-login-token", token);
         return tokenModel;
-
     }
+
+
+    //activation email
+    @GetMapping("mail/activation/{token}")
+    public boolean activationEmail(@PathVariable String token){
+
+        return userService.activationEmail(token);
+    }
+
+    //Send confirmation message again
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/mail/activation/send_message_again")
+    public boolean sendConfirmationLetterAgain(@RequestBody IdRequest idRequest) throws MessagingException {
+        return userService.sendConfirmationLetter(userService.findById(idRequest.getId()));
+    }
+
+
+
+
 }

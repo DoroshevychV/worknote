@@ -1,9 +1,8 @@
 package net.worknote.service.impl;
 
-import net.worknote.dto.UserAuthenticationDTO;
-import net.worknote.entity.User;
-import net.worknote.entity.enums.Role;
-import net.worknote.mail.Message;
+import net.worknote.domain.User;
+import net.worknote.domain.enums.Role;
+import net.worknote.mail.MessageForActivationEmail;
 import net.worknote.repository.UserRepository;
 import net.worknote.request.UserLoginRequest;
 import net.worknote.request.UserRegistrationRequest;
@@ -22,11 +21,13 @@ import javax.mail.internet.MimeMessage;
 
 /**
  * @author Vadym Doroshevych
- *@version starter
+ * @version starter
  */
 
 @Service
-public class UserServiceImpl implements UserService,UserDetailsService {
+public class UserServiceImpl implements UserService, UserDetailsService {
+
+
 
     private JavaMailSender javaMailSender;
 
@@ -39,62 +40,59 @@ public class UserServiceImpl implements UserService,UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserLoginRequest registration(UserRegistrationRequest user) throws MessagingException,MessagingException {
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void delete(Long id) {
+        userRepository.delete(id);
+    }
+
+    @Override
+    public UserLoginRequest registration(UserRegistrationRequest user) throws MessagingException, MessagingException {
+        //if user not null
         if (user != null) {
-            if(user.getFirstName().length()>1 || user.getLastName().length()>1) {
-                if((user.getPassword().length() >=8 || user.getRepeatPassword().length()>=8)
-                        ||(user.getPassword().length()<=28||user.getRepeatPassword().length()<=28)) {
-                    if (user.emailForm(user.getEmail())) {
-                        if (user.editNameOrLastName(user.getFirstName()) & user.editNameOrLastName(user.getLastName())) {
 
-                            if (user.getPassword().equals(user.getRepeatPassword())) {
+            //if user's names length are bigger than one letter
+            if (user.getFirstName().length() > 1 && user.getLastName().length() > 1) {
+                //if user password and duplicate password are greater than/equal to eight
+                // AND
+                // if the user password and duplicate password are less than/equals twenty-eight
+                if ((user.getPassword().length() >= 8 && user.getRepeatPassword().length() >= 8)
+                        && (user.getPassword().length() <= 28 && user.getRepeatPassword().length() <= 28)) {
+                    //if password and repeatPassword are identical
+                    if (user.getPassword().equals(user.getRepeatPassword())) {
+                        //find user by email
+                        User findUserByEmail = findByEmail(user.getEmail());
+                        //if request email is correct and findUserByEmail is not null
+                        if (user.emailForm(user.getEmail()) & findUserByEmail == null) {
+                            //correcting user's names
+                            if (user.editNameOrLastName(user.getFirstName()) & user.editNameOrLastName(user.getLastName())) {
+
                                 User registeringUser = new User(user);
+
+                                sendConfirmationLetter(registeringUser);
+
                                 registeringUser.setRole(Role.ROLE_USER);
+                                registeringUser.setEmailActivatedToken(registeringUser.generateRandomToken(28));
                                 userRepository.save(registeringUser);
-                                UserLoginRequest userLoginRequest = new UserLoginRequest(user.getEmail(), user.getPassword());
-
-
-                                //Відправляємо на пошту рандомний токен, який згенерувався в registerUserRequest
-                                //Відправляє email
-                                SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-
-                                simpleMailMessage.setTo(userLoginRequest.getEmail());
-                                simpleMailMessage.setFrom("worknotepost@gmail.com");
-                                simpleMailMessage.setSubject("Activation email");
-                                Message HTMLMessage = new Message();
-                                HTMLMessage.setMessageForConfirmationOfMail(registeringUser.getFirstName());
-                                simpleMailMessage.setText(HTMLMessage.getMessageForConfirmationOfMail());
-
-                                MimeMessage message = javaMailSender.createMimeMessage();
-                                MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-                                helper.setFrom(simpleMailMessage.getFrom());
-
-                                helper.setTo(simpleMailMessage.getTo());
-
-                                helper.setSubject("Activation email two");
-                                helper.setText(simpleMailMessage.getText(), true);
-
-                                javaMailSender.send(message);
-
-                                System.out.println("Email is activated - " + registeringUser.getEmailIsActivated());
-
-                                return userLoginRequest;
+                                return new UserLoginRequest(user.getEmail(), user.getPassword());
                             } else {
-                                throw new IllegalArgumentException("Passwords are not identical!");
+                                throw new IllegalArgumentException("Name or last name is incorrect!");
                             }
 
                         } else {
-                            throw new IllegalArgumentException("Name or last name is incorrect!");
+                            throw new IllegalArgumentException("Email address format is incorrect or registered!");
                         }
-
                     } else {
-                        throw new IllegalArgumentException("Email address format is incorrect!");
+                        throw new IllegalArgumentException("Passwords are not identical!");
                     }
-                }else {
+
+                } else {
                     throw new IllegalArgumentException("Password's size must be min = 8,max = 28");
                 }
-            }else{
+            } else {
                 throw new IllegalArgumentException("Name or last name is incorrect!");
             }
         } else {
@@ -102,6 +100,7 @@ public class UserServiceImpl implements UserService,UserDetailsService {
         }
     }
 
+    //find users by email
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         return userRepository.findByEmail(s);
@@ -110,5 +109,71 @@ public class UserServiceImpl implements UserService,UserDetailsService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    //find users by id
+    @Override
+    public User findById(Long id) {
+        return userRepository.findOne(id);
+    }
+
+    //activation user's email
+    @Override
+    public boolean activationEmail(String token) {
+        //cut the token on the id and the activation token
+        Long id = Long.parseLong(token.substring(0, token.indexOf("_")));
+        String emailActivatedToken = token.substring(token.indexOf("_") + 1, token.length());
+
+        //find user by id
+        User user = findById(id);
+        if (user.getEmailIsActivated()) {
+            //if the email is activated
+            return false;
+        }
+        //if the user is not null and the tokens are similar
+        if (user != null && user.getEmailActivatedToken().equals(emailActivatedToken)) {
+            user.setEmailIsActivated(true);
+            //if saved successfully - return true
+            if (save(user) != null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+    }
+
+
+    //method is sending confirmation to email
+    @Override
+    public boolean sendConfirmationLetter(User user) throws MessagingException {
+
+        if(!user.getEmailIsActivated()) {
+            //Відправляємо на пошту рандомний токен, який згенерувався в registerUserRequest
+            //Відправляє email
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            simpleMailMessage.setTo(user.getEmail());
+            simpleMailMessage.setFrom("worknotepost@gmail.com");
+            simpleMailMessage.setSubject("Activation email");
+
+            MessageForActivationEmail messageForActivationEmail = new MessageForActivationEmail();
+            messageForActivationEmail.setMessageForConfirmationOfMail(user);
+
+            simpleMailMessage.setText(messageForActivationEmail.getMessageForConfirmationOfMail());
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(simpleMailMessage.getFrom());
+            helper.setTo(simpleMailMessage.getTo());
+            helper.setSubject("Activation email two");
+            helper.setText(simpleMailMessage.getText(), true);
+            javaMailSender.send(message);
+
+            return true;
+        }else{
+            throw new IllegalArgumentException("Email is already activated");
+        }
+
     }
 }

@@ -1,16 +1,19 @@
-package net.worknote.entity;
+package net.worknote.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import net.worknote.entity.enums.Role;
+import net.worknote.domain.enums.Role;
 import net.worknote.request.UserRegistrationRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Random;
 
 /**
  * @author Vadym Doroshevych
@@ -18,7 +21,6 @@ import java.util.Collection;
  */
 
 @Entity
-@Table(name = "users")
 public class User implements UserDetails{
 
     @Id
@@ -31,6 +33,8 @@ public class User implements UserDetails{
 
     private String email;
 
+    private String emailActivatedToken;
+
     @JsonIgnore
     private String password;
 
@@ -38,16 +42,25 @@ public class User implements UserDetails{
 
     private Role role;
 
+    private String photo;
+    
+
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String password) {
+    public User(String firstName, String lastName
+            , String email, String emailFlag
+            , String password, boolean emailIsActivated
+            , Role role, String photo) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.emailActivatedToken = emailFlag;
         this.password = password;
+        this.emailIsActivated = emailIsActivated;
+        this.role = role;
+        this.photo = photo;
     }
-
 
     public User(UserRegistrationRequest userRegistrationRequest){
         this.firstName = userRegistrationRequest.getFirstName();
@@ -56,13 +69,6 @@ public class User implements UserDetails{
         this.password = userRegistrationRequest.getPassword();
     }
 
-    public User(String firstName, String lastName, String email, String password, boolean emailIsActivated) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.emailIsActivated = emailIsActivated;
-    }
 
     public Long getId() {
         return id;
@@ -96,6 +102,14 @@ public class User implements UserDetails{
         this.email = email;
     }
 
+    public String getEmailActivatedToken() {
+        return emailActivatedToken;
+    }
+
+    public void setEmailActivatedToken(String emailActivatedToken) {
+        this.emailActivatedToken = emailActivatedToken;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -120,17 +134,12 @@ public class User implements UserDetails{
         this.role = role;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", emailIsActivated=" + emailIsActivated +
-                ", role=" + role +
-                '}';
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     @Override
@@ -161,6 +170,18 @@ public class User implements UserDetails{
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String generateRandomToken(int size)
+    {
+        String characters = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOASDFGHJKLZXCVBNM";
+        Random code = new Random();
+        char[] text = new char[size];
+        for (int i = 0; i < size; i++)
+        {
+            text[i] = characters.charAt(code.nextInt(characters.length()));
+        }
+        return new String(text);
     }
 
 

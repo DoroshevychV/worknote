@@ -1,8 +1,5 @@
 package net.worknote.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import net.worknote.entity.User;
-
 
 public class UserRegistrationRequest{
 
