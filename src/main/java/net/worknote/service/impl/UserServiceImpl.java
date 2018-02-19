@@ -72,11 +72,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
                                 User registeringUser = new User(user);
 
-                                sendConfirmationLetter(registeringUser);
-
                                 registeringUser.setRole(Role.ROLE_USER);
                                 registeringUser.setEmailActivatedToken(registeringUser.generateRandomToken(28));
                                 userRepository.save(registeringUser);
+                                sendConfirmationLetter(registeringUser);
+
                                 return new UserLoginRequest(user.getEmail(), user.getPassword());
                             } else {
                                 throw new IllegalArgumentException("Name or last name is incorrect!");
@@ -133,6 +133,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         //if the user is not null and the tokens are similar
         if (user != null && user.getEmailActivatedToken().equals(emailActivatedToken)) {
             user.setEmailIsActivated(true);
+            user.setEmailActivatedToken(null);
             //if saved successfully - return true
             if (save(user) != null) {
                 return true;

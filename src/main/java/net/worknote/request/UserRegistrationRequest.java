@@ -13,15 +13,18 @@ public class UserRegistrationRequest{
 
     private String repeatPassword;
 
+    private int sex;
+
     public UserRegistrationRequest() {
     }
 
-    public UserRegistrationRequest(String firstName, String lastName, String email, String password,String repeatPassword) {
+    public UserRegistrationRequest(String firstName, String lastName, String email, String password, String repeatPassword, int sex) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.repeatPassword = repeatPassword;
+        this.sex = sex;
     }
 
     public String getFirstName() {
@@ -32,6 +35,7 @@ public class UserRegistrationRequest{
     }
 
     public void setFirstName(String firstName) {
+
         this.firstName = firstName;
     }
 
@@ -43,6 +47,7 @@ public class UserRegistrationRequest{
     }
 
     public void setLastName(String lastName) {
+
         this.lastName = lastName;
     }
 
@@ -72,18 +77,13 @@ public class UserRegistrationRequest{
         this.repeatPassword = repeatPassword;
     }
 
-    @Override
-    public String toString() {
-        return "UserRegistrationRequest{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", repeatPassword='" + repeatPassword + '\'' +
-                '}';
+    public int getSex() {
+        return sex;
     }
 
-
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
 
     //method editing first or last name
     //and replaces spelling

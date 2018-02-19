@@ -2,6 +2,7 @@ package net.worknote.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.worknote.domain.enums.Role;
+import net.worknote.domain.enums.Sex;
 import net.worknote.request.UserRegistrationRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,6 +44,8 @@ public class User implements UserDetails{
     private Role role;
 
     private String photo;
+
+    private Sex sex;
     
 
     public User() {
@@ -67,6 +70,13 @@ public class User implements UserDetails{
         this.lastName = userRegistrationRequest.getLastName();
         this.email = userRegistrationRequest.getEmail();
         this.password = userRegistrationRequest.getPassword();
+        if(userRegistrationRequest.getSex()==0){
+            this.sex = Sex.Man;
+        }else if(userRegistrationRequest.getSex()==1){
+            this.sex = Sex.Woman;
+        }else{
+            sex = null;
+        }
     }
 
 
