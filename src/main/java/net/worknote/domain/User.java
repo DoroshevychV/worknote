@@ -24,6 +24,7 @@ import java.util.Random;
 @Entity
 public class User implements UserDetails{
 
+    //Info for registration(Main info)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,19 +35,22 @@ public class User implements UserDetails{
 
     private String email;
 
-    private String emailActivatedToken;
-
     @JsonIgnore
     private String password;
+
+    private String emailActivatedToken;
 
     private boolean emailIsActivated = false;
 
     private Role role;
 
+    private Sex sex;
+
+    //Info for
+
     private String photo;
 
-    private Sex sex;
-    
+
 
     public User() {
     }

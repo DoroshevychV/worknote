@@ -69,7 +69,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         if (user.emailForm(user.getEmail()) & findUserByEmail == null) {
                             //correcting user's names
                             if (user.editNameOrLastName(user.getFirstName()) & user.editNameOrLastName(user.getLastName())) {
-
+                                if(user.getSex()>1){
+                                    user.setSex(0);
+                                }
                                 User registeringUser = new User(user);
 
                                 registeringUser.setRole(Role.ROLE_USER);
