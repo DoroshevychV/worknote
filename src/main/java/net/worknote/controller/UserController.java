@@ -2,6 +2,7 @@ package net.worknote.controller;
 
 import net.worknote.dto.TokenModel;
 import net.worknote.domain.User;
+import net.worknote.dto.UserForMainPageDTO;
 import net.worknote.dto.UserPageDTO;
 import net.worknote.request.IdRequest;
 import net.worknote.request.UserLoginRequest;
@@ -63,24 +64,16 @@ public class UserController {
 
     @GetMapping("/authentication")
     @PreAuthorize("isAuthenticated()")
-    public Long getUser(){
+    public UserForMainPageDTO getUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
-        return user.getId();
+        UserForMainPageDTO userForMainPageDTO = new UserForMainPageDTO(user.getId(),user.getFirstName(),user.getLastName());
+        return userForMainPageDTO;
     }
-//    @PostMapping
-//    @PreAuthorize("isAuthenticated()")
-//    public UserPageDTO getUser(){
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User user = (User) auth.getPrincipal();
-//        return user;
-//    }
-
 
     //activation email
     @GetMapping("mail/activation/{token}")
     public boolean activationEmail(@PathVariable String token){
-
         return userService.activationEmail(token);
     }
 

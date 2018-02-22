@@ -66,8 +66,6 @@ public class TokenUtils {
 				.signWith(SignatureAlgorithm.HS512, this.secret).compact();
 	}
 
-
-
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		User user = (User) userDetails;
 		final String username = this.getUsernameFromToken(token);
