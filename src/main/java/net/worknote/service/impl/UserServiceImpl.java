@@ -27,7 +27,7 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-
+    private final static String PATH_FOR_AVATAR = "D:/Other Files/Projects/worknote/src/main/java/net/worknote/files/avatarsPhoto/";
 
     private JavaMailSender javaMailSender;
 
@@ -76,6 +76,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
                                 registeringUser.setRole(Role.ROLE_USER);
                                 registeringUser.setEmailActivatedToken(registeringUser.generateRandomToken(28));
+                                registeringUser.setPhoto("/avatarsPhoto/none_photo.png");
                                 userRepository.save(registeringUser);
                                 sendConfirmationLetter(registeringUser);
 
@@ -101,6 +102,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new IllegalArgumentException("User not to be null!");
         }
     }
+
+
 
     //find users by email
     @Override

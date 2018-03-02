@@ -58,7 +58,7 @@ public class UserController {
         UserDetails userDetails =
                 this.userDetailsService.loadUserByUsername(userLoginRequest.getEmail());
         String token = this.tokenUtils.generateToken(userDetails);
-        TokenModel tokenModel = new TokenModel("worknote-login-token", token);
+        TokenModel tokenModel = new TokenModel("worknote-login-token", token,user.getId());
         return tokenModel;
     }
 
@@ -67,7 +67,7 @@ public class UserController {
     public UserForMainPageDTO getUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
-        UserForMainPageDTO userForMainPageDTO = new UserForMainPageDTO(user.getId(),user.getFirstName(),user.getLastName());
+        UserForMainPageDTO userForMainPageDTO = new UserForMainPageDTO(user.getId(),user.getFirstName(),user.getLastName(),user.getPhoto());
         return userForMainPageDTO;
     }
 
@@ -82,6 +82,14 @@ public class UserController {
     @PostMapping("/mail/activation/send_message_again")
     public boolean sendConfirmationLetterAgain(@RequestBody IdRequest idRequest) throws MessagingException {
         return userService.sendConfirmationLetter(userService.findById(idRequest.getId()));
+    }
+
+    @PostMapping("/userPage")
+    @PreAuthorize("isAuthenticated()")
+    public UserPageDTO getUserForMainPage(@RequestBody IdRequest idRequest){
+        User user = userService.findById(idRequest.getId());
+        UserPageDTO userPageDTO = new UserPageDTO(user);
+        return userPageDTO;
     }
 
 

@@ -46,11 +46,25 @@ public class User implements UserDetails{
 
     private Sex sex;
 
-    //Info for
-
     private String photo;
 
+    private int yearOfBirth;
 
+    private int monthOfBirth;
+
+    private int dayOfBirth;
+
+    private String country;
+
+    private String city;
+
+    private String job;
+
+    private String locationOfJob;
+
+    private String credo;
+
+    private int rating;
 
     public User() {
     }
@@ -83,6 +97,31 @@ public class User implements UserDetails{
         }
     }
 
+    public User(String firstName, String lastName, String email,
+                String password, String emailActivatedToken,
+                boolean emailIsActivated, Role role, Sex sex,
+                String photo, int yearOfBirth, int monthOfBirth,
+                int dayOfBirth, String country, String city, String job,
+                String locationOfJob, String credo, int rating) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.emailActivatedToken = emailActivatedToken;
+        this.emailIsActivated = emailIsActivated;
+        this.role = role;
+        this.sex = sex;
+        this.photo = photo;
+        this.yearOfBirth = yearOfBirth;
+        this.monthOfBirth = monthOfBirth;
+        this.dayOfBirth = dayOfBirth;
+        this.country = country;
+        this.city = city;
+        this.job = job;
+        this.locationOfJob = locationOfJob;
+        this.credo = credo;
+        this.rating = rating;
+    }
 
     public Long getId() {
         return id;
@@ -154,6 +193,90 @@ public class User implements UserDetails{
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public boolean isEmailIsActivated() {
+        return emailIsActivated;
+    }
+
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+
+    public int getYearOfBirth() {
+        return yearOfBirth;
+    }
+
+    public void setYearOfBirth(int yearOfBirth) {
+        this.yearOfBirth = yearOfBirth;
+    }
+
+    public int getMonthOfBirth() {
+        return monthOfBirth;
+    }
+
+    public void setMonthOfBirth(int monthOfBirth) {
+        this.monthOfBirth = monthOfBirth;
+    }
+
+    public int getDayOfBirth() {
+        return dayOfBirth;
+    }
+
+    public void setDayOfBirth(int dayOfBirth) {
+        this.dayOfBirth = dayOfBirth;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getJob() {
+        return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
+    }
+
+    public String getLocationOfJob() {
+        return locationOfJob;
+    }
+
+    public void setLocationOfJob(String locationOfJob) {
+        this.locationOfJob = locationOfJob;
+    }
+
+    public String getCredo() {
+        return credo;
+    }
+
+    public void setCredo(String credo) {
+        this.credo = credo;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     @Override

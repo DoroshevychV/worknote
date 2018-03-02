@@ -2,6 +2,8 @@ package net.worknote.dto;
 
 public class TokenModel {
 
+    private Long id;
+
     private String key;
 
     private String value;
@@ -9,9 +11,10 @@ public class TokenModel {
     public TokenModel() {
     }
 
-    public TokenModel(String key, String value) {
+    public TokenModel(String key, String value,Long id) {
         this.key = key;
         this.value = value;
+        this.id = id;
     }
 
     public String getKey() {
@@ -30,10 +33,19 @@ public class TokenModel {
         this.value = value;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "TokenModel{" +
-                "key='" + key + '\'' +
+                "id=" + id +
+                ", key='" + key + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }

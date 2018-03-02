@@ -1,7 +1,4 @@
-
 package net.worknote.dto;
-
-import net.worknote.domain.User;
 
 public class UserForMainPageDTO {
 

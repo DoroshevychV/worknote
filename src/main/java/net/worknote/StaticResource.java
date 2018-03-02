@@ -11,8 +11,8 @@ public class StaticResource extends WebMvcConfigurerAdapter{
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/avatars/**")
-		.addResourceLocations("file:///D:/Other Files/Projects/worknote/src/main/java/net/worknote/files");
+		registry.addResourceHandler("/avatarsPhoto/**")
+		.addResourceLocations("file:///D:/Other Files/Projects/worknote/src/main/java/net/worknote/files/avatarsPhoto/");
 	}
 	
 }
